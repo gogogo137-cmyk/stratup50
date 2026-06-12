@@ -449,3 +449,15 @@ with tab4:
     
     fig_curves.tight_layout()
     st.pyplot(fig_curves)
+
+# 4. Chat History Log Section
+st.write("---")
+st.markdown("## 💬 我與IDE的對話LOG")
+try:
+    with open('chat_history.md', 'r', encoding='utf-8') as chat_f:
+        chat_content = chat_f.read()
+    with st.expander("🔍 點擊展開查看完整對話歷程 (Click to expand and view complete chat history)", expanded=False):
+        st.markdown(chat_content)
+except Exception as e:
+    st.error(f"無法載入對話紀錄：{e}")
+
