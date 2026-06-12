@@ -1,5 +1,7 @@
 # L9 Kaggle 50 HW6 - CRISP-DM 專案分析報告
 
+> 🔗 **線上網頁版示範 (Live Demo)**: [stratup50-35hjkzmfzrwhwpcf22ruhg.streamlit.app](https://stratup50-35hjkzmfzrwhwpcf22ruhg.streamlit.app/)
+
 本報告完整記錄了基於 **CRISP-DM (Cross-Industry Standard Process for Data Mining)** 流程，針對 **Kaggle 50 Startups** 資料集進行新創公司利潤預測與特徵篩選的機器學習專案開發歷程與技術手冊。
 
 ---

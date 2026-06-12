@@ -191,7 +191,8 @@ def run_feature_selection(X_tr, y_tr, k):
 feature_selections = run_feature_selection(X_train, y_train, k_features)
 
 # Title
-st.markdown("<h1 style='text-align: center; color: #60a5fa; margin-bottom: 0.5rem;'>🚀 Startup 50 Profit Prediction & Feature Selection</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #60a5fa; margin-bottom: 0.2rem;'>🚀 Startup 50 Profit Prediction & Feature Selection</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 14px; color: #9ca3af;'>🔗 Deployed Application: <a href='https://stratup50-35hjkzmfzrwhwpcf22ruhg.streamlit.app/' style='color: #60a5fa; text-decoration: none;'>stratup50-35hjkzmfzrwhwpcf22ruhg.streamlit.app</a></p>", unsafe_allow_html=True)
 st.write("---")
 
 # Header Section matching Notion
