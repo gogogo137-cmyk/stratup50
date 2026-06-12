@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 def main():
     print("Loading dataset...")
     # Load data
-    df = pd.read_csv('E:/gogogo137/HW6/50_Startups.csv')
+    df = pd.read_csv('50_Startups.csv')
 
     # Preprocess categorical variable State
     df_all = pd.get_dummies(df, columns=['State'], drop_first=True)
@@ -151,7 +151,7 @@ def main():
         cell.set_linewidth(1.0)
 
     # Save output image
-    output_path = 'E:/gogogo137/HW6/feature_selection_performance_allinone.png'
+    output_path = 'feature_selection_performance_allinone.png'
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close()
     
