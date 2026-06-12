@@ -195,6 +195,92 @@ VIF 值均小於關鍵門檻值 5（甚至 10），顯示各支出特徵間不�
 *   **最佳特徵數量**：當特徵數量為 **$k=2$**（即納入 `R&D Spend` 與 `Marketing Spend`）時，多重線性迴歸模型展現出最佳效能，此時 **R-squared 達到最高值 0.9474**，且 **RMSE 達到最低值 8,198.80**。
 *   **多元線性迴歸與其他演算法對照**：我們除了建立標準的多元線性迴歸 (Multiple Linear Regression) 之外，同時也建立了決策樹與隨機森林模型，以對比線性與非線性模型的表現。
 
+### 💻 特徵篩選與效能對比繪圖程式碼實作 (Feature Selection Plotting Script)
+
+以下為本專案用以進行五大特徵篩選演算法計算、測試集指標驗證，以及自動繪製對比折線圖與表格的完整 Python 程式碼：
+
+```python
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# 1. 載入資料與 One-Hot 編碼
+df = pd.read_csv('50_Startups.csv')
+df_all = pd.get_dummies(df, columns=['State'], drop_first=True)
+df_all = df_all.rename(columns={'State_Florida': 'Florida', 'State_New York': 'New York'})
+
+X = df_all.drop('Profit', axis=1)
+y = df_all['Profit']
+
+# 2. 切分訓練與測試集 (使用 random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# 3. 定義五種篩選演算法的特徵排序
+rankings = {
+    'SFS (Forward)': ['R&D Spend', 'Marketing Spend', 'New York', 'Florida', 'Administration'],
+    'RFE': ['R&D Spend', 'Marketing Spend', 'Administration', 'Florida', 'New York'],
+    'SelectKBest': ['R&D Spend', 'Marketing Spend', 'Administration', 'New York', 'Florida'],
+    'Lasso (L1)': ['R&D Spend', 'Marketing Spend', 'Administration', 'Florida', 'New York'],
+    'Random Forest': ['R&D Spend', 'Marketing Spend', 'Administration', 'Florida', 'New York']
+}
+
+# 4. 針對 k=1..5 進行多元線性迴歸訓練與指標驗證
+algorithms = list(rankings.keys())
+k_range = list(range(1, 6))
+
+rmse_results = {algo: [] for algo in algorithms}
+r2_results = {algo: [] for algo in algorithms}
+
+for algo in algorithms:
+    rank = rankings[algo]
+    for k in k_range:
+        features = rank[:k]
+        lr = LinearRegression()
+        lr.fit(X_train[features], y_train)
+        y_pred = lr.predict(X_test[features])
+        
+        r2_results[algo].append(r2_score(y_test, y_pred))
+        rmse_results[algo].append(np.sqrt(mean_squared_error(y_test, y_pred)))
+
+# 5. 繪製精美對比折線圖與底部對照表格
+fig = plt.figure(figsize=(15, 10), facecolor='white')
+gs = GridSpec(2, 2, height_ratios=[1.8, 1], hspace=0.35, wspace=0.25)
+
+ax_rmse = fig.add_subplot(gs[0, 0])
+ax_r2 = fig.add_subplot(gs[0, 1])
+ax_table = fig.add_subplot(gs[1, :])
+
+colors = {
+    'SFS (Forward)': '#3B82F6', 'RFE': '#F59E0B', 'SelectKBest': '#10B981',
+    'Lasso (L1)': '#EF4444', 'Random Forest': '#8B5CF6'
+}
+
+# 繪製 RMSE 折線圖
+for algo in algorithms:
+    ax_rmse.plot(k_range, rmse_results[algo], marker='o', color=colors[algo], label=algo)
+ax_rmse.set_title('RMSE by Number of Features', fontweight='bold')
+ax_rmse.legend()
+
+# 繪製 R-squared 折線圖
+for algo in algorithms:
+    ax_r2.plot(k_range, r2_results[algo], marker='o', color=colors[algo], label=algo)
+    ax_r2.set_title('R-squared by Number of Features', fontweight='bold')
+    ax_r2.legend()
+
+# 繪製底部特徵排名對照表格
+table_data = [[algo] + rankings[algo] for algo in algorithms]
+headers = ['Algorithm', 'Rank 1', 'Rank 2', 'Rank 3', 'Rank 4', 'Rank 5']
+tbl = ax_table.table(cellText=table_data, colLabels=headers, loc='center', cellLoc='center')
+tbl.scale(1.0, 1.8)
+
+plt.savefig('feature_selection_performance_allinone.png', dpi=300, bbox_inches='tight')
+```
+
 ---
 
 ## 5. Model Evaluation
